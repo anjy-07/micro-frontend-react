@@ -1,6 +1,12 @@
 .App {
   text-align: center;
 }
+.Collapse{
+ 
+  font-size: xxx-large;
+  color: blue;
+  background-color: aquamarine;
+}
 
 .App-logo {
   height: 40vmin;

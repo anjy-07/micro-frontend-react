@@ -1,26 +1,39 @@
-import React from 'react';
-import logo from './logo.svg';
-import './App.css';
+import * as React from "react";
+import ReactDOM from "react-dom";
+import retargetEvents from "react-shadow-dom-retarget-events";
+import CollapsibleReact from "./Collapsible";
 
-function App() {
-  return (
-    <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.js</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
-    </div>
-  );
+
+export default class CollapsiblePanel extends HTMLElement {
+  static get observedAttributes() {
+    return ["title"];
+  }
+
+  mountPoint;
+  title;
+  component;
+
+  connectedCallback() {
+    this.mountPoint = document.createElement("span");
+    const shadowRoot = this.attachShadow({ mode: "open" });
+    shadowRoot.appendChild(this.mountPoint);
+
+    const title = this.getAttribute("title");
+    this.component = ReactDOM.render(
+      React.createElement(CollapsibleReact, {}, React.createElement("slot")),
+      this.mountPoint
+    );
+    this.component.setState({ title });
+    retargetEvents(shadowRoot);
+  }
+
+  attributeChangedCallback(name, oldValue, newValue) {
+    if (this.component && name === "title") {
+      this.component.setState({ title: newValue });
+    }
+  }
+
+
 }
 
-export default App;
+window.customElements.define("collapsible-panel", CollapsiblePanel);
